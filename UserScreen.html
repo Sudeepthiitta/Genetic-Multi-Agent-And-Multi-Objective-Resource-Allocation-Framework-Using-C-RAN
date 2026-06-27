@@ -1,0 +1,1012 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Client Dashboard - Multi-Agent C-RAN Allocation</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+:root{
+  --bg-1:#f3fcff;
+  --bg-2:#d9f4ff;
+  --bg-3:#9fdfff;
+  --panel-top:rgba(255,255,255,0.95);
+  --panel-bottom:rgba(239,250,255,0.92);
+  --panel-border:rgba(82,183,226,0.22);
+  --text:#16384d;
+  --muted:rgba(37,79,104,0.72);
+  --success:#2f9b65;
+  --warn:#d88b1a;
+  --danger:#d95a5a;
+}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Outfit", "Segoe UI", sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(760px 360px at 10% 8%, rgba(255,187,84,0.18), transparent 60%),
+    radial-gradient(980px 520px at 88% 12%, rgba(82,183,226,0.18), transparent 58%),
+    radial-gradient(640px 420px at 50% 100%, rgba(129,220,255,0.22), transparent 62%),
+    linear-gradient(150deg,var(--bg-1) 0%, #ffffff 28%, var(--bg-2) 68%, var(--bg-3) 100%);
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:linear-gradient(rgba(99,176,214,0.08) 1px, transparent 1px),linear-gradient(90deg, rgba(99,176,214,0.08) 1px, transparent 1px);
+  background-size:34px 34px;
+  opacity:.42;
+  pointer-events:none;
+}
+.page-bubbles{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+  overflow:hidden;
+}
+.page-bubble{
+  position:absolute;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.82), rgba(255,255,255,0.18) 58%, rgba(126,210,245,0.12));
+  border:1px solid rgba(255,255,255,0.42);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.68), 0 18px 32px rgba(108,185,222,0.18);
+  backdrop-filter:blur(8px);
+}
+.page-bubble.one{width:140px;height:140px;top:92px;right:8%;opacity:.72}
+.page-bubble.two{width:88px;height:88px;bottom:120px;right:54px;opacity:.82}
+.page-bubble.three{width:64px;height:64px;top:190px;left:6%;opacity:.62}
+.topbar,.main,.footer{position:relative;z-index:2}
+.topbar{
+  border-bottom:1px solid rgba(82,183,226,0.18);
+  background:linear-gradient(180deg,rgba(255,255,255,0.84),rgba(241,250,255,0.72));
+  backdrop-filter:blur(16px);
+}
+.brand{font-family:"Space Grotesk", sans-serif;font-weight:700;letter-spacing:.3px}
+.nav-btn{
+  display:inline-flex;align-items:center;text-decoration:none;color:#184760;
+  border:1px solid rgba(82,183,226,0.22);border-radius:14px;padding:9px 15px;
+  background:rgba(255,255,255,0.82);font-weight:600;
+  box-shadow:0 10px 22px rgba(126,194,224,0.14);
+  transition:transform .18s ease, background .18s ease, border-color .18s ease;
+}
+.nav-btn:hover{transform:translateY(-1px)}
+.nav-btn.primary{background:rgba(255,177,59,0.18);border-color:rgba(255,177,59,0.45)}
+.profile-nav-btn{
+  width:46px;
+  height:46px;
+  padding:0;
+  border-radius:50%;
+  overflow:hidden;
+  justify-content:center;
+  background:rgba(255,255,255,0.92);
+}
+.profile-nav-btn img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.profile-nav-fallback{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:"Space Grotesk", sans-serif;
+  font-weight:700;
+  color:#163041;
+  background:linear-gradient(135deg,#ffd166,#ff9f1c);
+}
+.main{padding:28px 0}
+.card-glass{
+  background:linear-gradient(180deg,var(--panel-top),var(--panel-bottom));
+  border:1px solid var(--panel-border);
+  border-radius:22px;
+  box-shadow:0 24px 56px rgba(73,143,179,0.16);
+  backdrop-filter:blur(18px);
+  padding:24px;
+  position:relative;
+  overflow:hidden;
+}
+.card-glass::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(157,224,255,0.2),transparent 28%,transparent 72%,rgba(255,255,255,0.82));
+  pointer-events:none;
+}
+.section-title{font-family:"Space Grotesk", sans-serif;font-weight:700}
+.muted{color:var(--muted)}
+.form-label{color:var(--muted)}
+.form-control{
+  border-radius:14px;
+  background:rgba(255,255,255,0.94);
+  border:1px solid rgba(82,183,226,0.2);
+  color:#184760;
+}
+.form-control:focus{
+  background:#fff;
+  border-color:rgba(82,183,226,0.52);
+  color:#184760;
+  box-shadow:0 0 0 3px rgba(82,183,226,0.12);
+}
+.btn-main{
+  border:none;border-radius:14px;padding:10px 14px;font-weight:700;
+  background:linear-gradient(90deg,#ffd166,#ff9f1c);color:#112633;width:100%;
+  box-shadow:0 12px 28px rgba(255,177,59,0.2);
+}
+.alert-soft{
+  border-radius:16px;
+  padding:14px 16px;
+  border:1px solid rgba(82,183,226,0.18);
+  background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(236,249,255,0.84));
+}
+.alert-soft.success{color:var(--success)}
+.alert-soft.error{color:var(--danger)}
+.status-pill{
+  display:inline-flex;padding:7px 11px;border-radius:999px;font-size:12px;font-weight:700;
+  background:rgba(255,255,255,0.92);border:1px solid rgba(82,183,226,0.18);color:#1d5572
+}
+.status-pill.best-pill{
+  background:rgba(191,244,215,0.88);
+  border-color:rgba(47,155,101,0.26);
+  color:#1f7a4f;
+}
+.allocation-card{
+  border-radius:16px;
+  padding:14px 16px;
+  border:1px solid rgba(82,183,226,0.18);
+  background:linear-gradient(180deg,rgba(255,255,255,0.92),rgba(230,247,255,0.84));
+}
+.allocation-card.best{
+  background:rgba(191,244,215,0.78);
+  border-color:rgba(47,155,101,0.26);
+}
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.summary-stat{
+  border-radius:18px;
+  padding:16px;
+  border:1px solid rgba(82,183,226,0.18);
+  background:linear-gradient(180deg,rgba(255,255,255,0.92),rgba(230,247,255,0.84));
+}
+.summary-label{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:6px;
+}
+.summary-value{
+  font-family:"Space Grotesk", sans-serif;
+  font-size:28px;
+  font-weight:700;
+  line-height:1;
+}
+.summary-note{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:8px;
+  line-height:1.5;
+}
+.profile-shell{
+  display:grid;
+  grid-template-columns:110px 1fr;
+  gap:18px;
+  align-items:start;
+}
+.profile-card{
+  position:fixed;
+  top:0;
+  right:0;
+  width:min(460px,100vw);
+  height:100vh;
+  overflow:auto;
+  z-index:35;
+  border-radius:0;
+  border-left:1px solid rgba(82,183,226,0.18);
+  transform:translateX(108%);
+  transition:transform .28s ease;
+  background:linear-gradient(180deg,rgba(255,255,255,0.98),rgba(238,249,255,0.98));
+}
+.profile-card.open{
+  transform:translateX(0);
+}
+.profile-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:16px;
+}
+.profile-panel-close{
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:12px;
+  background:rgba(233,247,255,0.96);
+  color:#1d5572;
+  font-size:22px;
+}
+.profile-avatar{
+  width:96px;
+  height:96px;
+  border-radius:26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:"Space Grotesk", sans-serif;
+  font-size:34px;
+  font-weight:800;
+  color:#163041;
+  background:linear-gradient(135deg,#ffd166,#ff9f1c);
+  box-shadow:0 18px 34px rgba(0,0,0,0.22);
+  overflow:hidden;
+}
+.profile-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.profile-headline{
+  font-family:"Space Grotesk", sans-serif;
+  font-size:24px;
+  font-weight:700;
+}
+.profile-subtitle{
+  color:var(--muted);
+  margin-top:4px;
+}
+.profile-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:12px;
+}
+.profile-badge{
+  display:inline-flex;
+  align-items:center;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  color:#1f5d7c;
+  background:rgba(255,255,255,0.92);
+  border:1px solid rgba(82,183,226,0.18);
+}
+.profile-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  margin-top:18px;
+}
+.profile-field{
+  padding:14px 16px;
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.94),rgba(232,247,255,0.88));
+  border:1px solid rgba(82,183,226,0.16);
+}
+.profile-label{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:6px;
+}
+.profile-value{
+  font-size:16px;
+  font-weight:600;
+  word-break:break-word;
+}
+.profile-editor{
+  position:absolute;
+  top:0;
+  right:0;
+  width:min(360px,100%);
+  height:100%;
+  padding:22px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.98),rgba(238,249,255,0.98));
+  border-left:1px solid rgba(82,183,226,0.16);
+  transform:translateX(108%);
+  transition:transform .28s ease;
+  z-index:3;
+}
+.profile-overlay{
+  position:fixed;
+  inset:0;
+  z-index:34;
+  background:rgba(85,146,176,0.24);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .28s ease;
+}
+.profile-overlay.open{
+  opacity:1;
+  pointer-events:auto;
+}
+.profile-editor.open{
+  transform:translateX(0);
+}
+.profile-editor-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:16px;
+}
+.profile-editor-close{
+  width:38px;
+  height:38px;
+  border:none;
+  border-radius:12px;
+  background:rgba(233,247,255,0.96);
+  color:#1d5572;
+  font-size:20px;
+}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:14px 10px;border-bottom:1px solid rgba(82,183,226,0.14);font-size:14px}
+th{color:#184760;font-weight:700}
+.chat-box{
+  flex:1;
+  min-height:0;
+  min-height:260px;
+  overflow:auto;
+  border:1px solid rgba(82,183,226,0.14);
+  border-radius:18px;
+  padding:14px 12px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.22), transparent 32%),
+    linear-gradient(180deg, rgba(232,246,255,0.98), rgba(222,241,252,0.96));
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.72);
+}
+.chat-item{
+  padding:10px 12px 8px;
+  border-radius:14px;
+  max-width:84%;
+  box-shadow:0 8px 18px rgba(94,153,183,0.10);
+  position:relative;
+}
+.chat-item.me{
+  align-self:flex-end;
+  background:#dcf8c6;
+  border-bottom-right-radius:4px;
+}
+.chat-item.admin{
+  align-self:flex-start;
+  background:#ffffff;
+  border-bottom-left-radius:4px;
+}
+.chat-item.assistant{
+  align-self:flex-start;
+  background:#fff2d9;
+  border-bottom-left-radius:4px;
+}
+.chat-meta-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:4px;
+}
+.chat-name{
+  font-weight:700;
+  color:#214960;
+  text-transform:capitalize;
+  font-size:12px;
+}
+.chat-time{
+  color:#6d8ea2;
+  font-size:11px;
+  margin-left:auto;
+}
+.chat-text{
+  color:#28495d;
+  line-height:1.45;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.chat-fab{
+  position:fixed;right:22px;bottom:22px;z-index:20;width:64px;height:64px;border:none;border-radius:50%;
+  background:linear-gradient(135deg,#ffd166,#ff9f1c);color:#1f2937;box-shadow:0 18px 38px rgba(92,153,184,0.24);
+  display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;
+}
+.chat-fab.has-unread::after{
+  content:"";
+  position:absolute;
+  top:6px;
+  right:6px;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#ef4444;
+  border:2px solid rgba(255,255,255,0.94);
+  box-shadow:0 6px 14px rgba(239,68,68,0.34);
+}
+.chat-panel{
+  position:fixed;right:22px;bottom:98px;z-index:20;width:min(420px,calc(100vw - 24px));display:none;
+  max-height:min(82vh,760px);
+}
+.chat-panel.open{display:block}
+.chat-shell{
+  background:rgba(255,255,255,0.97);border:1px solid rgba(82,183,226,0.18);border-radius:22px;padding:0;
+  box-shadow:0 24px 60px rgba(92,153,184,0.2);backdrop-filter:blur(16px);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  height:clamp(520px, 82vh, 760px);
+}
+.chat-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  background:linear-gradient(135deg,#0f6d84,#1b8aa4);
+  color:#fff;
+}
+.chat-intro{
+  margin:12px 12px 0;
+  border-radius:12px;
+  padding:8px 12px;
+  background:rgba(238,248,255,0.95);
+  color:#4a7186;
+  font-size:12px;
+  line-height:1.35;
+  border:1px solid rgba(82,183,226,0.14);
+}
+.chat-prompts{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:8px;
+  margin:0;
+  overflow:auto;
+  padding-bottom:2px;
+}
+.prompt-chip{
+  border:none;
+  border-radius:999px;
+  padding:8px 12px;
+  background:#f5fbff;
+  border:1px solid rgba(82,183,226,0.18);
+  color:#1d5572;
+  font-size:12px;
+  font-weight:600;
+  white-space:nowrap;
+}
+.prompt-chip:hover{
+  background:#fff6df;
+  border-color:rgba(255,177,59,0.34);
+}
+.chat-composer{
+  border-top:1px solid rgba(82,183,226,0.14);
+  padding:12px;
+  flex:0 0 auto;
+  background:#fdfefe;
+}
+.chat-form-row{
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+}
+.chat-form-row .form-control{
+  min-height:52px;
+  resize:none;
+  border-radius:22px;
+  padding:12px 16px;
+}
+.chat-send{
+  width:auto;
+  min-width:112px;
+  border-radius:22px;
+  margin:0;
+}
+.robot-badge{
+  display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.28);font-size:18px;
+}
+.chat-header .section-title,
+.chat-header .muted{
+  color:#fff;
+}
+.chat-header .muted{
+  opacity:.88;
+}
+.chat-header .nav-btn{
+  background:rgba(255,255,255,0.14);
+  color:#fff;
+  border-color:rgba(255,255,255,0.22);
+  box-shadow:none;
+}
+.chat-empty{
+  align-self:center;
+  text-align:center;
+  color:#5d8196;
+  background:rgba(255,255,255,0.72);
+  border:1px dashed rgba(82,183,226,0.22);
+  border-radius:14px;
+  padding:12px 14px;
+  max-width:90%;
+}
+.footer{
+  text-align:center;padding:12px;font-size:13px;border-top:1px solid rgba(82,183,226,0.16);
+  background:rgba(255,255,255,0.58);color:#4d7d96
+}
+@media (max-width: 768px){
+  .profile-shell{grid-template-columns:1fr}
+  .profile-avatar{width:84px;height:84px;border-radius:22px;font-size:30px}
+  .profile-grid{grid-template-columns:1fr}
+  .summary-grid{grid-template-columns:1fr}
+  .chat-panel{right:12px;left:12px;bottom:88px;width:auto;max-height:none}
+  .chat-shell{height:min(calc(100vh - 112px), 760px)}
+  .chat-box{min-height:300px}
+  .chat-form-row{flex-direction:column}
+  .chat-send{width:100%}
+  .profile-editor{width:100%}
+  .profile-card{width:100vw}
+}
+</style>
+</head>
+<body>
+<div class="page-bubbles" aria-hidden="true">
+  <span class="page-bubble one"></span>
+  <span class="page-bubble two"></span>
+  <span class="page-bubble three"></span>
+</div>
+<div class="topbar">
+  <div class="container py-3 d-flex align-items-center justify-content-between">
+    <div class="brand">Multi-Agent C-RAN Allocation</div>
+    <div class="d-flex gap-2">
+      <a class="nav-btn" href="{% url 'index' %}">Home</a>
+      <button type="button" class="nav-btn profile-nav-btn" id="topProfileBtn" aria-label="Open profile">
+        {% if profile.profile_image %}
+        <img src="/static/{{ profile.profile_image }}" alt="{{ profile.username }}">
+        {% else %}
+        <span class="profile-nav-fallback">{{ profile.username|slice:":1"|upper }}</span>
+        {% endif %}
+      </button>
+      <a class="nav-btn primary" href="{% url 'index' %}">Logout</a>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-lg-7">
+        <div class="card-glass h-100">
+          <h3 class="section-title mb-2">Client Request Form</h3>
+          <p class="muted mb-4">Submit a single request. Every demand is sent to admin for Fixed, Hybrid, and Genetic evaluation before final allocation is shown.</p>
+          {% if flash %}
+          <div class="alert-soft {{ flash.0 }} mb-4">{{ flash.1 }}</div>
+          {% endif %}
+          <form method="post" action="{% url 'AddDemand' %}">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">CPU Needed</label>
+                <input type="number" min="1" name="cpu" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Memory Needed</label>
+                <input type="number" min="1" name="memory" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Storage Needed</label>
+                <input type="number" min="1" name="storage" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Priority (0-1)</label>
+                <input type="number" min="0" max="1" step="0.1" name="priority" class="form-control" required>
+              </div>
+            </div>
+            <button class="btn-main mt-4">Submit Request</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="card-glass h-100">
+          <h3 class="section-title mb-2">Live Flow</h3>
+          <p class="muted mb-3">Current user: <b>{{ current_user }}</b></p>
+          <div class="alert-soft mb-3">
+            1. You submit a resource demand.
+          </div>
+          <div class="alert-soft mb-3">
+            2. Admin runs Fixed, Hybrid, and Genetic methods on submitted demands.
+          </div>
+          <div class="alert-soft mb-0">
+            3. You see only your allocated resources once admin completes evaluation.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-lg-7">
+        <div class="card-glass h-100">
+          <h3 class="section-title mb-3">Allocation Support</h3>
+          <div class="alert-soft mb-3">Your dashboard focuses on your profile, submitted demands, and the resources allocated to you.</div>
+          <div class="alert-soft">Use the AI assistant for doubts about request status, allocation amount, and next steps.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-lg-12">
+        <div class="card-glass h-100">
+          <h3 class="section-title mb-3">Quick Summary</h3>
+          <div class="summary-grid mb-3">
+            <div class="summary-stat">
+              <div class="summary-label">Total Requests</div>
+              <div class="summary-value">{{ summary.total_requests }}</div>
+              <div class="summary-note">All demands you have submitted so far.</div>
+            </div>
+            <div class="summary-stat">
+              <div class="summary-label">Allocated Requests</div>
+              <div class="summary-value">{{ summary.allocated_requests }}</div>
+              <div class="summary-note">Requests that already received resource allocation.</div>
+            </div>
+            <div class="summary-stat">
+              <div class="summary-label">Pending Review</div>
+              <div class="summary-value">{{ summary.pending_requests }}</div>
+              <div class="summary-note">Requests still waiting for admin evaluation.</div>
+            </div>
+            <div class="summary-stat">
+              <div class="summary-label">Allocated Resources</div>
+              <div class="summary-note">
+                CPU {{ summary.total_allocated_cpu }},
+                Memory {{ summary.total_allocated_memory }},
+                Storage {{ summary.total_allocated_storage }}
+              </div>
+            </div>
+          </div>
+          {% if summary.latest_request %}
+          <div class="alert-soft">
+            Latest request #{{ summary.latest_request.id }}:
+            status `{{ summary.latest_request.status }}`
+            with allocated CPU {{ summary.latest_request.allocated_cpu }},
+            Memory {{ summary.latest_request.allocated_memory }},
+            Storage {{ summary.latest_request.allocated_storage }}.
+          </div>
+          {% else %}
+          <div class="alert-soft">Submit your first demand to start seeing request summaries and allocation totals here.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="card-glass">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h3 class="section-title mb-1">My Requests</h3>
+          <div class="muted">You only see your demand and the resources allocated to you.</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Demand</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Allocated</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in requests %}
+            <tr>
+              <td>{{ row.id }}</td>
+              <td>CPU {{ row.cpu }}, Memory {{ row.memory }}, Storage {{ row.storage }}</td>
+              <td>{{ row.priority }}</td>
+              <td><span class="status-pill">{{ row.status }}</span></td>
+              <td>{{ row.allocated_cpu }}/{{ row.allocated_memory }}/{{ row.allocated_storage }}</td>
+              <td><a class="nav-btn" href="{% url 'DeleteUserRequest' row.id %}">Delete</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="muted">No requests submitted yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="profile-overlay" id="profileOverlay"></div>
+<div class="card-glass profile-card" id="profilePanel">
+  <div class="profile-topbar">
+    <h3 class="section-title mb-0">My Profile</h3>
+    <button type="button" class="profile-panel-close" id="closeProfilePanel">&times;</button>
+  </div>
+  <div class="profile-shell">
+    <div class="profile-avatar">
+      {% if profile.profile_image %}
+      <img src="/static/{{ profile.profile_image }}" alt="{{ profile.username }}">
+      {% else %}
+      {{ profile.username|slice:":1"|upper }}
+      {% endif %}
+    </div>
+    <div>
+      <div class="profile-headline">{{ profile.username }}</div>
+      <div class="profile-subtitle">Client account for submitting demands and tracking allocation results.</div>
+      <div class="profile-meta">
+        <span class="profile-badge">Profile Active</span>
+        <span class="profile-badge">Evaluation User</span>
+      </div>
+    </div>
+  </div>
+  <div class="profile-grid">
+    <div class="profile-field">
+      <div class="profile-label">Username</div>
+      <div class="profile-value">{{ profile.username }}</div>
+    </div>
+    <div class="profile-field">
+      <div class="profile-label">Contact</div>
+      <div class="profile-value">{{ profile.contact|default:"-" }}</div>
+    </div>
+    <div class="profile-field">
+      <div class="profile-label">Email</div>
+      <div class="profile-value">{{ profile.email|default:"-" }}</div>
+    </div>
+    <div class="profile-field">
+      <div class="profile-label">Address</div>
+      <div class="profile-value">{{ profile.address|default:"-" }}</div>
+    </div>
+  </div>
+  <div class="profile-editor" id="profileEditor">
+    <div class="profile-editor-header">
+      <div>
+        <div class="section-title" style="font-size:20px;">Edit Profile</div>
+        <div class="muted" style="font-size:13px;">Update your details here</div>
+      </div>
+      <button type="button" class="profile-editor-close" id="closeProfileEditor">&times;</button>
+    </div>
+    <form method="post" action="{% url 'UpdateProfile' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label">Profile Image</label>
+        <input type="file" name="profile_image" class="form-control" accept="image/*">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" value="{{ profile.username }}" readonly>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Contact</label>
+        <input type="text" name="contact" class="form-control" value="{{ profile.contact }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value="{{ profile.email }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Address</label>
+        <textarea name="address" class="form-control" rows="4">{{ profile.address }}</textarea>
+      </div>
+      <button class="btn-main" type="submit">Save Profile</button>
+    </form>
+  </div>
+</div>
+<button type="button" class="chat-fab{% if unread_admin_chat_notifications %} has-unread{% endif %}" id="chatFab" aria-label="Open admin chat">AI</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-shell">
+    <div class="chat-header">
+      <div class="d-flex align-items-center gap-2">
+        <span class="robot-badge">AI</span>
+        <div>
+          <div class="section-title" style="font-size:16px;">AI Support Chat</div>
+          <div class="muted" style="font-size:12px;">Chat with AI or send a message to admin</div>
+        </div>
+      </div>
+      <button type="button" class="nav-btn" id="closeChatBtn">Close</button>
+    </div>
+    <div class="chat-intro">
+      Ask about request status, allocation, workflow, or priority.
+    </div>
+    <div class="chat-box" id="chatBox">
+      {% for row in chat_messages %}
+      <div class="chat-item {% if row.sender == current_user %}me{% elif row.sender == 'assistant' %}assistant{% else %}admin{% endif %}">
+        <div class="chat-meta-row">
+          <span class="chat-name">{% if row.sender == current_user %}You{% elif row.sender == 'assistant' %}AI Assistant{% else %}{{ row.sender }}{% endif %}</span>
+          <span class="chat-time">{{ row.created_at }}</span>
+        </div>
+        <div class="chat-text">{{ row.message }}</div>
+      </div>
+      {% empty %}
+      <div class="chat-empty">No messages yet. Ask the AI anything, or type <b>@admin</b> to contact admin.</div>
+      {% endfor %}
+    </div>
+    <form method="post" action="{% url 'SendUserChat' %}" class="chat-composer">
+      {% csrf_token %}
+      <div class="chat-prompts mb-3">
+        <button type="button" class="prompt-chip" data-prompt="What is my latest request status?">Latest Status</button>
+        <button type="button" class="prompt-chip" data-prompt="How much resource was allocated to me?">My Allocation</button>
+        <button type="button" class="prompt-chip" data-prompt="What does priority mean?">Priority Meaning</button>
+        <button type="button" class="prompt-chip" data-prompt="How do I explain this project in demo?">Demo Explanation</button>
+      </div>
+      <div class="chat-form-row">
+        <textarea id="assistantMessage" name="message" class="form-control" rows="2" required placeholder="Type your message here... Use @admin to talk with admin."></textarea>
+        <button class="btn-main chat-send">Send</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="footer">Copyright 2026 Adaptive Resource Allocation</div>
+<script>
+const chatFab = document.getElementById("chatFab");
+const chatPanel = document.getElementById("chatPanel");
+const chatBox = document.getElementById("chatBox");
+const closeChatBtn = document.getElementById("closeChatBtn");
+const assistantMessage = document.getElementById("assistantMessage");
+const promptChips = document.querySelectorAll(".prompt-chip");
+const topProfileBtn = document.getElementById("topProfileBtn");
+const closeProfilePanel = document.getElementById("closeProfilePanel");
+const profilePanel = document.getElementById("profilePanel");
+const profileOverlay = document.getElementById("profileOverlay");
+const closeProfileEditor = document.getElementById("closeProfileEditor");
+const profileEditor = document.getElementById("profileEditor");
+const currentUsername = "{{ current_user|escapejs }}";
+let unreadAdminCount = {{ unread_admin_chat_notifications|default:0 }};
+let knownChatIds = [{% for row in chat_messages %}{{ row.id }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderUserChatMessages(messages) {
+  if (!chatBox) {
+    return;
+  }
+  if (!messages.length) {
+    chatBox.innerHTML = '<div class="chat-empty">No messages yet. Ask the AI anything, or type <b>@admin</b> to contact admin.</div>';
+    knownChatIds = [];
+    return;
+  }
+  chatBox.innerHTML = messages.map(function (row) {
+    let bubbleClass = "admin";
+    let senderLabel = row.sender;
+    if (row.sender === currentUsername) {
+      bubbleClass = "me";
+      senderLabel = "You";
+    } else if (row.sender === "assistant") {
+      bubbleClass = "assistant";
+      senderLabel = "AI Assistant";
+    }
+    return `
+      <div class="chat-item ${bubbleClass}">
+        <div class="chat-meta-row">
+          <span class="chat-name">${escapeHtml(senderLabel)}</span>
+          <span class="chat-time">${escapeHtml(row.created_at)}</span>
+        </div>
+        <div class="chat-text">${escapeHtml(row.message)}</div>
+      </div>
+    `;
+  }).join("");
+  knownChatIds = messages.map(function (row) { return row.id; });
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function syncChatFabState() {
+  if (!chatFab) {
+    return;
+  }
+  chatFab.classList.toggle("has-unread", unreadAdminCount > 0);
+}
+
+function markChatRead() {
+  unreadAdminCount = 0;
+  syncChatFabState();
+  fetch("{% url 'MarkUserChatRead' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]')?.value || "",
+      "X-Requested-With": "XMLHttpRequest"
+    }
+  }).catch(function () {});
+}
+
+function pollUserChatState() {
+  fetch("{% url 'UserChatState' %}", {
+    headers: { "X-Requested-With": "XMLHttpRequest" }
+  })
+    .then(function (response) { return response.json(); })
+    .then(function (data) {
+      const messages = Array.isArray(data.messages) ? data.messages : [];
+      const nextIds = messages.map(function (row) { return row.id; });
+      const hasNewMessage = nextIds.length !== knownChatIds.length || nextIds.some(function (id, index) { return id !== knownChatIds[index]; });
+      const nextUnread = Number(data.unread_admin_chat_notifications || 0);
+      if (hasNewMessage) {
+        renderUserChatMessages(messages);
+      }
+      if (nextUnread > unreadAdminCount && chatPanel && !chatPanel.classList.contains("open")) {
+        chatPanel.classList.add("open");
+      }
+      unreadAdminCount = nextUnread;
+      syncChatFabState();
+      if (chatPanel && chatPanel.classList.contains("open") && unreadAdminCount > 0) {
+        markChatRead();
+      }
+    })
+    .catch(function () {});
+}
+
+if (chatFab && chatPanel) {
+  chatFab.addEventListener("click", function () {
+    chatPanel.classList.toggle("open");
+    if (chatPanel.classList.contains("open")) {
+      markChatRead();
+    }
+  });
+}
+{% if open_ai_chat %}
+if (chatPanel) {
+  chatPanel.classList.add("open");
+}
+{% endif %}
+if (chatBox) {
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+syncChatFabState();
+pollUserChatState();
+if (closeChatBtn && chatPanel) {
+  closeChatBtn.addEventListener("click", function () {
+    chatPanel.classList.remove("open");
+  });
+}
+promptChips.forEach(function (chip) {
+  chip.addEventListener("click", function () {
+    if (assistantMessage) {
+      assistantMessage.value = chip.getAttribute("data-prompt") || "";
+      assistantMessage.focus();
+    }
+  });
+});
+if (topProfileBtn && profileEditor) {
+  topProfileBtn.addEventListener("click", function () {
+    profilePanel.classList.add("open");
+    profileOverlay.classList.add("open");
+    profileEditor.classList.add("open");
+  });
+}
+if (closeProfilePanel && profilePanel) {
+  closeProfilePanel.addEventListener("click", function () {
+    profilePanel.classList.remove("open");
+    profileOverlay.classList.remove("open");
+    profileEditor.classList.remove("open");
+  });
+}
+setInterval(pollUserChatState, 4000);
+if (chatPanel && chatPanel.classList.contains("open") && unreadAdminCount > 0) {
+  markChatRead();
+}
+if (profileOverlay && profilePanel) {
+  profileOverlay.addEventListener("click", function () {
+    profilePanel.classList.remove("open");
+    profileOverlay.classList.remove("open");
+    profileEditor.classList.remove("open");
+  });
+}
+if (closeProfileEditor && profileEditor) {
+  closeProfileEditor.addEventListener("click", function () {
+    profileEditor.classList.remove("open");
+  });
+}
+</script>
+</body>
+</html>
