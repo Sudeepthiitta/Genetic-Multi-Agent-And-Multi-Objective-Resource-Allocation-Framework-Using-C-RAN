@@ -1,0 +1,295 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adaptive Resource Allocation - C-RAN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+:root{
+  --bg-1:#f4fcff;
+  --bg-2:#dff5ff;
+  --bg-3:#a8e2ff;
+  --panel:rgba(255,255,255,0.88);
+  --panel-border:rgba(88,183,227,0.22);
+  --text:#15384c;
+  --muted:rgba(33,76,101,0.74);
+  --accent:#ffd166;
+}
+
+body{
+  min-height:100vh;
+  margin:0;
+  font-family:"Outfit", "Segoe UI", sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(900px 500px at 8% 10%, rgba(255,209,102,0.2), transparent 60%),
+    radial-gradient(1000px 560px at 90% 14%, rgba(87,197,245,0.2), transparent 58%),
+    linear-gradient(130deg,var(--bg-1) 0%, #ffffff 34%, var(--bg-2) 66%, var(--bg-3) 100%);
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:linear-gradient(rgba(92,176,215,0.07) 1px, transparent 1px),linear-gradient(90deg, rgba(92,176,215,0.07) 1px, transparent 1px);
+  background-size:36px 36px;
+  pointer-events:none;
+  opacity:.48;
+}
+
+.bubble{
+  position:fixed;
+  border-radius:50%;
+  filter:blur(22px);
+  opacity:.42;
+  z-index:0;
+  pointer-events:none;
+  animation:drift 10s ease-in-out infinite;
+}
+.bubble.one{width:220px;height:220px;background:rgba(87,197,245,0.42);left:5%;top:120px;}
+.bubble.two{width:160px;height:160px;background:rgba(255,209,102,0.4);right:8%;top:140px;animation-delay:-3s;}
+.bubble.three{width:260px;height:260px;background:rgba(140,220,255,0.5);left:28%;bottom:-80px;animation-delay:-6s;}
+.bubble.four{width:120px;height:120px;background:rgba(255,255,255,0.72);right:22%;top:340px;animation-delay:-2s;}
+.bubble.five{width:90px;height:90px;background:rgba(87,197,245,0.34);left:18%;top:440px;animation-delay:-5s;}
+@keyframes drift{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(-16px) translateX(10px)}}
+
+.topbar,.hero,.section-wrap,footer{position:relative;z-index:2}
+
+.topbar{
+  border-bottom:1px solid rgba(88,183,227,0.18);
+  background:rgba(255,255,255,0.76);
+  backdrop-filter:blur(12px);
+}
+.brand{
+  font-family:"Space Grotesk", sans-serif;
+  font-weight:700;
+  letter-spacing:.3px;
+}
+.nav-btn{
+  display:inline-flex;
+  align-items:center;
+  border:1px solid rgba(88,183,227,0.24);
+  background:rgba(255,255,255,0.88);
+  color:#184760;
+  text-decoration:none;
+  border-radius:12px;
+  padding:8px 14px;
+  font-weight:600;
+  transition:.2s ease;
+  box-shadow:0 10px 22px rgba(126,194,224,0.12);
+}
+.nav-btn:hover{transform:translateY(-1px);background:#fff;color:#184760}
+.nav-btn.primary{background:rgba(255,209,102,0.2);border-color:rgba(255,209,102,0.45)}
+
+.hero{padding:58px 0 20px;text-align:center}
+.hero h1{
+  font-family:"Space Grotesk", sans-serif;
+  font-weight:700;
+  font-size:clamp(28px,3.5vw,42px);
+  line-height:1.2;
+}
+.hero p{
+  color:var(--muted);
+  max-width:900px;
+  margin:14px auto 0;
+  font-size:17px;
+}
+
+.section-wrap{padding:22px 0}
+.card-glass{
+  background:var(--panel);
+  border:1px solid var(--panel-border);
+  border-radius:18px;
+  padding:24px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 24px 60px rgba(92,153,184,0.16);
+}
+.card-glass h3{
+  font-family:"Space Grotesk", sans-serif;
+  font-size:1.35rem;
+}
+.muted{color:var(--muted)}
+
+.step-card{
+  background:rgba(255,255,255,0.76);
+  border:1px solid rgba(88,183,227,0.18);
+  border-radius:14px;
+  padding:18px;
+  height:100%;
+}
+.entry-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.entry-card{
+  position:relative;
+  display:block;
+  text-decoration:none;
+  color:var(--text);
+  padding:24px;
+  border-radius:20px;
+  border:1px solid rgba(88,183,227,0.2);
+  background:linear-gradient(180deg,rgba(255,255,255,0.96),rgba(231,247,255,0.88));
+  box-shadow:0 18px 38px rgba(126,194,224,0.14);
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  overflow:hidden;
+}
+.entry-card::before{
+  content:"";
+  position:absolute;
+  inset:auto -40px -50px auto;
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(87,197,245,0.22), transparent 68%);
+}
+.entry-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 24px 42px rgba(126,194,224,0.2);
+}
+.entry-card.primary{
+  border-color:rgba(255,209,102,0.42);
+  background:linear-gradient(180deg,rgba(255,251,236,0.98),rgba(255,239,198,0.9));
+}
+.entry-icon{
+  width:56px;
+  height:56px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  font-weight:800;
+  color:#184760;
+  background:linear-gradient(135deg,#ffffff,#dff5ff);
+  border:1px solid rgba(88,183,227,0.18);
+  margin-bottom:16px;
+}
+.entry-card.primary .entry-icon{
+  background:linear-gradient(135deg,#fff8dc,#ffd166);
+}
+.entry-title{
+  font-family:"Space Grotesk", sans-serif;
+  font-size:1.2rem;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.entry-text{
+  color:var(--muted);
+  line-height:1.6;
+}
+.step-card h5{
+  font-family:"Space Grotesk", sans-serif;
+  margin-bottom:8px;
+}
+
+footer{
+  margin-top:26px;
+  padding:12px;
+  text-align:center;
+  border-top:1px solid rgba(88,183,227,0.18);
+  background:rgba(255,255,255,0.58);
+  color:rgba(33,76,101,0.85);
+}
+
+@media (max-width: 768px){
+  .topbar .container{flex-direction:column;align-items:flex-start!important;gap:10px}
+  .nav-btn{padding:7px 11px;font-size:13px}
+  .entry-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<div class="bubble one"></div>
+<div class="bubble two"></div>
+<div class="bubble three"></div>
+<div class="bubble four"></div>
+<div class="bubble five"></div>
+
+<div class="topbar">
+  <div class="container py-3 d-flex align-items-center justify-content-between">
+    <div class="brand">C-RAN Resource Allocation</div>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="container">
+    <h1>Genetic Multi-Objective Adaptive Resource Allocation for C-RAN</h1>
+    <p>Intelligent cloud resource optimization for 5G scenarios with demand-aware, priority-driven scheduling and measurable fairness.</p>
+  </div>
+</section>
+
+<section class="section-wrap pt-0">
+  <div class="container">
+    <div class="entry-grid">
+      <a class="entry-card" href="{% url 'UserLogin' %}">
+        <div class="entry-icon">U</div>
+        <div class="entry-title">Client Login</div>
+        <div class="entry-text">Open the user dashboard to submit demands, view allocation status, and use the support assistant.</div>
+      </a>
+      <a class="entry-card" href="{% url 'AdminLogin' %}" target="_blank" rel="noopener noreferrer">
+        <div class="entry-icon">A</div>
+        <div class="entry-title">Admin Login</div>
+        <div class="entry-text">Review incoming requests, run Fixed, Hybrid, and Genetic methods, and inspect graphs and comparison tables.</div>
+      </a>
+      <a class="entry-card primary" href="{% url 'Register' %}">
+        <div class="entry-icon">+</div>
+        <div class="entry-title">Register</div>
+        <div class="entry-text">Create a new client account and join the live evaluation workflow with profile-based request submission.</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section-wrap">
+  <div class="container">
+    <div class="card-glass">
+      <h3 class="mb-2">Project Overview</h3>
+      <p class="muted mb-0" style="line-height:1.8;text-align:justify;">
+        Cloud Radio Access Network separates BBUs and RRHs to improve scalability and centralized management.
+        This project compares Fixed, Hybrid, and Multiobjective Genetic allocation strategies to reduce unfulfilled demand,
+        increase resource utilization, and improve fairness across requests under dynamic traffic conditions.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section-wrap">
+  <div class="container">
+    <div class="card-glass">
+      <h3 class="mb-3 text-center">How It Works</h3>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="step-card">
+            <h5>1) Demand Input</h5>
+            <p class="muted mb-0">Submit individual requests with CPU, memory, storage, and priority values for admin evaluation.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="step-card">
+            <h5>2) Allocation Runs</h5>
+            <p class="muted mb-0">Execute Fixed, Hybrid, and Multiobjective algorithms to compare fulfillment behavior under shared capacity.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="step-card">
+            <h5>3) Metrics + Graph</h5>
+            <p class="muted mb-0">Inspect output details, proof metrics, and graph comparison for optimization quality and load balance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>Copyright 2026 Adaptive Resource Allocation</footer>
+</body>
+</html>

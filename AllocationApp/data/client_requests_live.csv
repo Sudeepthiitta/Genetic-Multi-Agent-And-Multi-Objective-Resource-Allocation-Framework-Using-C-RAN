@@ -1,0 +1,7 @@
+id,username,cpu,memory,storage,priority,status,shortage_note,allocated_cpu,allocated_memory,allocated_storage,source,created_at,feedback_status,feedback_note,requested_extra_cpu,requested_extra_memory,requested_extra_storage
+2,aaa,78,98,170,0.7,rejected,Rejected by admin after review,0,0,0,manual,2026-03-12 22:21:56,pending,,0,0,0
+5,deepthi,67,66,87,0.6,allocated,Allocated from base capacity,67,66,87,manual,2026-03-13 12:17:10,satisfied,hlo,0,0,0
+6,aaa,78,98,170,0.7,rejected,Rejected by admin after review,0,0,0,csv,2026-03-13 13:00:00,pending,,0,0,0
+7,deepthi,67,66,87,0.6,allocated,Allocated from base capacity,67,66,87,csv,2026-03-13 13:00:00,satisfied,hlo,0,0,0
+8,aaa,78,98,170,0.7,rejected,Rejected by admin after review,0,0,0,csv,2026-03-13 13:02:36,pending,,0,0,0
+9,deepthi,67,66,87,0.6,allocated,Allocated from base capacity,67,66,87,csv,2026-03-13 13:02:36,satisfied,hlo,0,0,0
