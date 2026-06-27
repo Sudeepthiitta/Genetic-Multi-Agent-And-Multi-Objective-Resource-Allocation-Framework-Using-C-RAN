@@ -1,0 +1,7 @@
+id,username,cpu,memory,storage,priority,status,shortage_note,allocated_cpu,allocated_memory,allocated_storage,source,created_at,feedback_status,feedback_note,requested_extra_cpu,requested_extra_memory,requested_extra_storage
+9,123,58,42,65,1.0,allocated,Automatically applied from overall best algorithm: Genetic,40,42,65,manual,2026-03-16T18:24:31.668748+00:00,pending,,0,0,0
+10,1234,52,38,60,0.9,allocated,Automatically applied from overall best algorithm: Genetic,32,38,60,manual,2026-03-16T18:24:50.411390+00:00,pending,,0,0,0
+11,234,24,78,135,0.7,allocated,Automatically applied from overall best algorithm: Genetic,8,66,135,manual,2026-03-16T18:25:14.901580+00:00,pending,,0,0,0
+12,aaa,18,88,145,0.6,allocated,Automatically applied from overall best algorithm: Genetic,0,5,91,manual,2026-03-16T18:26:14.788838+00:00,pending,,0,0,0
+13,098,34,46,82,0.8,allocated,Automatically applied from overall best algorithm: Genetic,19,46,82,manual,2026-03-16T18:27:42.049905+00:00,pending,,0,0,0
+14,098,28,58,118,0.5,allocated,Automatically applied from overall best algorithm: Genetic,0,3,67,manual,2026-03-16T18:28:46.457297+00:00,pending,,0,0,0
